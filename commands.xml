@@ -1,0 +1,160 @@
+<config>
+  <commands>
+    <keyword name="mail">
+      <keyword name="user">
+        <keyword name="add">
+          <parameter name="login" />
+          <parameter name="surname" />
+          <parameter name="domain" />
+          <action type="sql" database="1" level="1">
+            <sql>insert into user values (0, '~login~', 'no password', '~surname~', (select id from domain where name='~domain~'), concat('~domain~', '/', '~login~'), 50000000, 1)</sql>
+          </action>
+        </keyword>
+        <keyword name="get">
+          <action type="sql" database="1" level="2">
+            <sql>select username,surname,domain.name as domain,quota,home,active from user, domain where user.domain=domain.id</sql>
+          </action>
+        </keyword>
+        <keyword name="del">
+          <parameter name="surname" />
+          <action type="sql" database="1" level="1">
+            <sql>delete from user where surname='~surname~'</sql>
+          </action>
+        </keyword>
+        <keyword name="change">
+          <keyword name="password">
+            <parameter name="email" />
+            <parameter name="password" />
+            <action type="sql" database="1" level="1">
+              <sql>update user, domain set user.password=md5('~password~') where concat(user.username, '@', domain.name) = '~email~' and domain.id = user.domain</sql>
+            </action>
+          </keyword>
+          <keyword name="surname">
+            <parameter name="email" />
+            <parameter name="surname" />
+            <action type="sql" database="1" level="1">
+              <sql>update user, domain set user.surname='~surname~' where concat(user.username, '@', domain.name) = '~email~' and domain.id = user.domain</sql>
+            </action>
+          </keyword>
+          <keyword name="quota">
+            <parameter name="email" />
+            <parameter name="quota"/>
+            <action type="sql" database="1" level="1">
+              <sql>update user, domain set user.quota='~quota~' where concat(user.username, '@', domain.name) = '~email~' and domain.id = user.domain</sql>
+            </action>
+          </keyword>
+          <keyword name="active">
+            <keyword name="enable">
+              <parameter name="email" />
+              <action type="sql" database="1" level="1">
+                <sql>update user, domain set user.active=1 where concat(user.username, '@', domain.name) = '~email~' and domain.id = user.domain</sql>
+              </action>
+            </keyword>
+            <keyword name="disable">
+              <parameter name="email" />
+              <action type="sql" database="1" level="1">
+                <sql>update user, domain set user.active=0 where concat(user.username, '@', domain.name) = '~email~' and domain.id = user.domain</sql>
+              </action>
+            </keyword>
+          </keyword>
+        </keyword>
+        
+        <keyword name="queue">
+          <action type="cli" level="1">
+            <command>postqueue -p</command>
+          </action>
+        </keyword>
+      </keyword>  
+  
+      <keyword name="domain">
+        <keyword name="add">
+          <parameter name="name"/>
+          <parameter name="corporation"/>
+          <action type="sql" database="1" level="1">
+            <sql>insert into domain values (0, '~name~', '~corporation~')</sql>
+          </action>
+        </keyword>
+        <keyword name="del">
+          <parameter name="domain"/>
+          <action type="sql" database="1" level="1">
+            <sql>delete from domain where name='~domain~'</sql>
+          </action>
+        </keyword>
+        <keyword name="show">
+          <action type="sql" database="1" level="2">
+            <sql>select name, corporation from domain</sql>
+          </action>
+        </keyword>
+      </keyword>
+
+      <keyword name="alias">
+        <keyword name="add">
+          <parameter name="source" />
+          <parameter name="destination" />
+          <action type="sql" database="1" level="1">
+          <sql>insert into alias values(0, '~source~', (select user.id from user, domain where user.domain=domain.id and '~destination~'=concat(username,'@',domain.name)))</sql>
+          </action>
+        </keyword>
+        <keyword name="del">
+          <parameter name="source" />
+          <parameter name="destination" />
+          <action type="sql" database="1" level="1">
+          <sql>delete from alias where source='~source~' and mailbox=(select user.id from user, domain where user.domain=domain.id and '~destination~'=concat(username,'@',domain.name)))</sql>
+          </action>
+        </keyword>
+        <keyword name="show">
+          <action type="sql" database="1" level="2">
+          <sql>select * from alias_map</sql>
+          </action>
+        </keyword>
+      </keyword>
+      
+    </keyword>  
+    <keyword name="status">
+      <keyword name="uptime">
+        <action type="cli" level="2">
+          <command>uptime</command>
+        </action>
+      </keyword>
+
+      <keyword name="raid">
+        <action type="cli" level="2">
+          <command>/sbin/mdadm -D /dev/md0</command>
+        </action>
+      </keyword>
+
+      <keyword name="fs">
+        <action type="cli" level="2">
+          <command>df -h</command>
+        </action>
+      </keyword>
+
+      <keyword name="last">
+        <action type="cli" level="2">
+          <command>last | head -n 15</command>
+        </action>
+      </keyword>
+    </keyword>
+
+    <keyword name="service">
+      <keyword name="restart">
+        <keyword name="postfix">
+          <action level="1" type="cli">
+            <command>/etc/rc.d/postfix restart</command>
+          </action>
+        </keyword>    
+      </keyword>    
+    </keyword>    
+
+  </commands>
+
+  <databases>
+    <db id="1" type="mysql" host="localhost" user="server_bot" pass="enter password here" db="server" />
+  </databases>
+
+  <users>
+    <user jid="bla@af.gliwice.pl" level="1" />
+    <user jid="af.gliwice.pl" level="1" />
+    <user jid="local" level="1" />
+  </users>
+</config>

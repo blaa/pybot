@@ -1,0 +1,34 @@
+**
+* Generic command execution framework.
+**
+
+It reads commands using one of it's frontends, parses and passes 
+to backend which executes them somehow. Two frontends and two 
+backends are implemented currently: console frontend, jabber-bot frontend,
+shell execution backend and MySQL/SQL backend.
+
+- Commands form a tree, eg.:
+      mail                 service
+     /   \                /       \
+ user     alias          mysql     postfix
+   / \         \        /     \           \
+add   change   add    status   restart     flushqueue
+
+Leaf commands can take arguments:
+mail user add    username         Frank     password ElisabethXIII domain kingdom.uk
+^^^^^^^^^^^^^    ^^^^^^^^         ^^^^^     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  Command     Argument keyword  Arg. value                etc.
+
+Or no arguments at all:
+service mysql restart
+
+First (in example commands.xml) is changed to SQL command, second executes /etc/init.d/mysql restart
+and returns it's result.
+
+
+- There may be many access levels to services (in jabber frontend)
+
+
+Usage:
+You will want to edit commands.xml and config.py. For console use just try:
+./pybot.py <command>
