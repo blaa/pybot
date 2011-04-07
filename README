@@ -27,8 +27,17 @@ and returns it's result.
 
 
 - There may be many access levels to services (in jabber frontend)
-
+- You can write 'help' as part of the command and see possible options.
 
 Usage:
 You will want to edit commands.xml and config.py. For console use just try:
 ./pybot.py <command>
+
+
+
+Authors:
+Magdalena Kalinowska
+Daniela Presz
+Tomasz Fortuna (bla at thera.be)
+
+License: GNU GPLv3+ ask if you require other.
